@@ -75,14 +75,6 @@ export default function Navigation({ cartCount, favCount, categories }) {
               <img src="/sadaat_header_logo_transparent.png" alt="Sadaat Electrical Store" className="h-12 lg:h-14 w-auto" />
             </Link>
 
-            {/* Categories Button - Desktop */}
-            <button className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-gray-100" style={{color: '#0066B3'}}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              Categories
-            </button>
-
             {/* Search Bar - eXtra/Tamkeen Style */}
             <div className="flex-1 max-w-xl relative hidden md:block">
               <div className="flex items-center rounded-full overflow-hidden" style={{border: '2px solid #e5e7eb', backgroundColor: '#f9fafb'}}>
@@ -153,6 +145,32 @@ export default function Navigation({ cartCount, favCount, categories }) {
         </div>
 
       </nav>
+
+      {/* Desktop Category Nav */}
+      <div className="hidden lg:block sticky top-0 z-40 bg-white" style={{borderBottom: '1px solid #e5e7eb'}}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center gap-8 h-12 overflow-x-auto no-scrollbar">
+            {[
+              { name: 'All Products', path: '/products' },
+              { name: 'Lighting', path: '/products?category=lighting' },
+              { name: 'Switches & Sockets', path: '/products?category=switches' },
+              { name: 'Wiring', path: '/products?category=wiring' },
+              { name: 'Fans', path: '/products?category=fans' },
+              { name: 'Home Appliances', path: '/products?category=appliances' },
+              { name: 'Accessories', path: '/products?category=accessories' },
+            ].map((item, i) => (
+              <Link
+                key={i}
+                to={item.path}
+                className="text-xs font-medium tracking-wide uppercase whitespace-nowrap hover:text-[#0066B3] transition-colors"
+                style={{color: '#4b5563'}}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Desktop Promo Bar */}
       <div className="hidden lg:block" style={{backgroundColor: '#003D6B', borderBottom: '1px solid rgba(255,255,255,0.1)'}}>
