@@ -25,6 +25,7 @@ console.log('Categories seeded');
 const admins = [
   { email: 'admin@sadaatelectricalstore.com', password: 'SadaatElectrical2024!@#' },
   { email: 'marwashahwazirkhan@gmail.com', password: 'marwashahwazirkhanbusiness@1' },
+  { email: 'spindag@sadaat.com', password: 'Spindag@sadaat865320' },
 ];
 
 for (const admin of admins) {
