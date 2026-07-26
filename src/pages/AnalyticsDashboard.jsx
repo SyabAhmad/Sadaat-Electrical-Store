@@ -15,7 +15,7 @@ function formatDate(dateStr) {
 }
 
 function LineChart({ data, color, height = 160 }) {
-  if (!data || data.length === 0) return <div className="text-gray-300 text-sm py-8 text-center">No data</div>;
+  if (!data || data.length === 0) return <div className="text-sm py-8 text-center" style={{color: '#9ca3af'}}>No data</div>;
   const max = Math.max(...data.map(d => d.count), 1);
   const width = Math.max(data.length * 50, 300);
   const points = data.map((d, i) => {
@@ -48,14 +48,14 @@ function FunnelBar({ label, value, max, color }) {
   const pct = max > 0 ? (value / max) * 100 : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="w-24 text-xs text-gray-500 text-right shrink-0">{label}</span>
-      <div className="flex-1 bg-gray-100 h-6 overflow-hidden">
-        <div className={`h-full ${color} transition-all duration-500 flex items-center justify-end pr-2`}
+      <span className="w-24 text-xs text-right shrink-0" style={{color: '#6b7280'}}>{label}</span>
+      <div className="flex-1 h-6 overflow-hidden rounded-lg" style={{backgroundColor: '#f3f4f6'}}>
+        <div className={`h-full ${color} transition-all duration-500 flex items-center justify-end pr-2 rounded-lg`}
           style={{ width: `${Math.max(pct, value > 0 ? 4 : 0)}%` }}>
-          <span className="text-[10px] text-brand-cream font-medium">{value}</span>
+          <span className="text-[10px] text-white font-medium">{value}</span>
         </div>
       </div>
-      <span className="w-10 text-xs text-gray-400 shrink-0">{pct.toFixed(1)}%</span>
+      <span className="w-10 text-xs shrink-0" style={{color: '#9ca3af'}}>{pct.toFixed(1)}%</span>
     </div>
   );
 }
@@ -109,47 +109,52 @@ export default function AnalyticsDashboard() {
   }, [productStats]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{backgroundColor: '#f8fafc'}}>
       <AdminHeader userEmail="" />
 
       {/* Time range selector */}
-      <div className="max-w-6xl mx-auto px-6 py-4">
-        <div className="flex bg-brand-cream border border-gray-200 w-fit">
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-4">
+        <div className="flex bg-white border rounded-lg w-fit" style={{borderColor: '#e5e7eb'}}>
           {TIME_RANGES.map(r => (
             <button key={r.days} onClick={() => { setTimeRange(r.days); fetchData(r.days); }}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${timeRange === r.days ? "bg-brand-black text-brand-cream" : "text-gray-400 hover:text-gray-600"}`}>
+              className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-all rounded-lg ${
+                timeRange === r.days ? "text-white" : ""
+              }`}
+              style={timeRange === r.days ? {backgroundColor: '#0066B3', color: '#ffffff'} : {color: '#6b7280'}}>
               {r.label}
             </button>
           ))}
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 lg:px-8 py-8">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Page Views", value: stats.pageViews, color: "bg-blue-500" },
-            { label: "Product Views", value: stats.productViews, color: "bg-purple-500" },
-            { label: "Add to Cart", value: stats.addToCart, color: "bg-green-500" },
-            { label: "Checkouts", value: stats.checkouts, color: "bg-amber-500" },
+            { label: "Page Views", value: stats.pageViews, color: "#0066B3", bg: "rgba(0,102,179,0.1)" },
+            { label: "Product Views", value: stats.productViews, color: "#8b5cf6", bg: "rgba(139,92,246,0.1)" },
+            { label: "Add to Cart", value: stats.addToCart, color: "#10b981", bg: "rgba(16,185,129,0.1)" },
+            { label: "Checkouts", value: stats.checkouts, color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
           ].map((s, i) => (
-            <div key={i} className="bg-brand-cream border border-gray-100 p-5">
-              <div className={`w-2 h-2 rounded-full ${s.color} mb-3`} />
-              <p className="text-2xl font-bold">{s.value.toLocaleString()}</p>
-              <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+            <div key={i} className="p-5 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{backgroundColor: s.bg}}>
+                <div className="w-3 h-3 rounded-full" style={{backgroundColor: s.color}} />
+              </div>
+              <p className="text-2xl font-bold" style={{color: '#0A0A0A'}}>{s.value.toLocaleString()}</p>
+              <p className="text-xs mt-1" style={{color: '#6b7280'}}>{s.label}</p>
             </div>
           ))}
         </div>
 
         {/* Conversion + Funnel */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-brand-cream border border-gray-100 p-6">
-            <p className="text-xs text-gray-400 tracking-wider uppercase mb-2">Conversion Rate</p>
-            <p className="text-3xl font-bold">{conversionRate}%</p>
-            <p className="text-xs text-gray-300 mt-2">Add to cart / Product views</p>
+          <div className="p-6 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <p className="text-xs tracking-wider uppercase mb-2" style={{color: '#6b7280'}}>Conversion Rate</p>
+            <p className="text-3xl font-bold" style={{color: '#0066B3'}}>{conversionRate}%</p>
+            <p className="text-xs mt-2" style={{color: '#9ca3af'}}>Add to cart / Product views</p>
           </div>
-          <div className="bg-brand-cream border border-gray-100 p-6 lg:col-span-2">
-            <p className="text-xs text-gray-400 tracking-wider uppercase mb-4">Funnel</p>
+          <div className="p-6 rounded-xl lg:col-span-2" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <p className="text-xs tracking-wider uppercase mb-4" style={{color: '#6b7280'}}>Funnel</p>
             <div className="space-y-2">
               <FunnelBar label="Page Views" value={stats.pageViews} max={stats.pageViews} color="bg-blue-500" />
               <FunnelBar label="Product Views" value={stats.productViews} max={stats.pageViews} color="bg-purple-500" />
@@ -161,43 +166,43 @@ export default function AnalyticsDashboard() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-brand-cream border border-gray-100 p-6">
-            <p className="text-xs text-gray-400 tracking-wider uppercase mb-4">Page Views</p>
-            <LineChart data={timeSeries.pageViews} color="#3b82f6" />
+          <div className="p-6 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <p className="text-xs tracking-wider uppercase mb-4" style={{color: '#6b7280'}}>Page Views</p>
+            <LineChart data={timeSeries.pageViews} color="#0066B3" />
           </div>
-          <div className="bg-brand-cream border border-gray-100 p-6">
-            <p className="text-xs text-gray-400 tracking-wider uppercase mb-4">Engagement</p>
-            <LineChart data={timeSeries.productViews} color="#9333ea" />
+          <div className="p-6 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <p className="text-xs tracking-wider uppercase mb-4" style={{color: '#6b7280'}}>Engagement</p>
+            <LineChart data={timeSeries.productViews} color="#8b5cf6" />
           </div>
         </div>
 
         {/* Top Products */}
-        <div className="bg-brand-cream border border-gray-100 p-6">
-          <p className="text-xs text-gray-400 tracking-wider uppercase mb-4">Top Products</p>
+        <div className="p-6 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+          <p className="text-xs tracking-wider uppercase mb-4" style={{color: '#6b7280'}}>Top Products</p>
           {topProducts.length === 0 ? (
-            <p className="text-gray-300 text-sm py-4 text-center">No data yet</p>
+            <p className="text-sm py-4 text-center" style={{color: '#9ca3af'}}>No data yet</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left p-3 text-xs font-medium text-gray-400">#</th>
-                    <th className="text-left p-3 text-xs font-medium text-gray-400">Product</th>
-                    <th className="text-right p-3 text-xs font-medium text-gray-400">Views</th>
-                    <th className="text-right p-3 text-xs font-medium text-gray-400">Cart</th>
-                    <th className="text-right p-3 text-xs font-medium text-gray-400">Rate</th>
+                  <tr style={{borderBottom: '1px solid #e5e7eb'}}>
+                    <th className="text-left p-3 text-xs font-semibold" style={{color: '#6b7280'}}>#</th>
+                    <th className="text-left p-3 text-xs font-semibold" style={{color: '#6b7280'}}>Product</th>
+                    <th className="text-right p-3 text-xs font-semibold" style={{color: '#6b7280'}}>Views</th>
+                    <th className="text-right p-3 text-xs font-semibold" style={{color: '#6b7280'}}>Cart</th>
+                    <th className="text-right p-3 text-xs font-semibold" style={{color: '#6b7280'}}>Rate</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topProducts.map((p, i) => {
                     const rate = p.views > 0 ? ((p.cartAdds / p.views) * 100).toFixed(1) : "0.0";
                     return (
-                      <tr key={p.id} className="border-b border-gray-50">
-                        <td className="p-3 text-gray-300">{i + 1}</td>
-                        <td className="p-3 font-medium truncate max-w-[200px]">{p.productName || `Product ${p.id.slice(-6)}`}</td>
+                      <tr key={p.id} style={{borderBottom: '1px solid #f3f4f6'}}>
+                        <td className="p-3" style={{color: '#9ca3af'}}>{i + 1}</td>
+                        <td className="p-3 font-medium truncate max-w-[200px]" style={{color: '#0A0A0A'}}>{p.productName || `Product ${p.id.slice(-6)}`}</td>
                         <td className="p-3 text-right">{p.views}</td>
                         <td className="p-3 text-right">{p.cartAdds}</td>
-                        <td className="p-3 text-right text-gray-500">{rate}%</td>
+                        <td className="p-3 text-right" style={{color: '#6b7280'}}>{rate}%</td>
                       </tr>
                     );
                   })}
