@@ -176,6 +176,11 @@ export default function Footer() {
               </Link>
             </div>
           </div>
+          <div className="text-center mt-4">
+            <a href="https://syab.tech" target="_blank" rel="noopener noreferrer" className="text-[11px] transition-colors hover:text-[#4da6ff]" style={{color: 'rgba(255,255,255,0.25)'}}>
+              Made by <span className="font-semibold" style={{color: 'rgba(255,255,255,0.4)'}}>syab.tech</span> / <span className="font-semibold" style={{color: 'rgba(255,255,255,0.4)'}}>MenteE</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
