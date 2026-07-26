@@ -84,6 +84,11 @@ export const fetchProductById = async (id) => {
   return safeJson(res);
 };
 
+export const fetchProductBySlug = async (slug) => {
+  const res = await request(`/products?slug=${slug}`);
+  return safeJson(res);
+};
+
 export const fetchCategories = async () => {
   const res = await request('/products?categories=true');
   return safeJson(res);

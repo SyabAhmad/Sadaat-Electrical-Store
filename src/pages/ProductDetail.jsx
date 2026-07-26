@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { trackProductView } from "../lib/analytics";
+import { fetchProductBySlug } from "../lib/api";
 
 export default function ProductDetail({ products, handleAddToCart, toggleFavorite, favorites }) {
   const { slug } = useParams();
@@ -16,6 +17,14 @@ export default function ProductDetail({ products, handleAddToCart, toggleFavorit
       setProduct(foundProduct);
       setSelectedImage(foundProduct.mainImage || "");
       trackProductView(foundProduct.id, foundProduct.name);
+    } else if (slug) {
+      fetchProductBySlug(slug).then((data) => {
+        if (data && !data.error) {
+          setProduct(data);
+          setSelectedImage(data.mainImage || "");
+          trackProductView(data.id, data.name);
+        }
+      }).catch(() => {});
     }
   }, [slug, products]);
 
