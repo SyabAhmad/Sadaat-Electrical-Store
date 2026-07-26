@@ -48,7 +48,7 @@ Rs. ${product.price} x ${quantity} = Rs. ${product.price * quantity}
 
 Please respond, thanks!`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${cleanNumber}?text=${encodedMessage}`, "_blank");
+    window.location.href = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
   };
 
   const related = products

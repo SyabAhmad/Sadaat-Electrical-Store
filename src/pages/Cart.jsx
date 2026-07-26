@@ -18,7 +18,7 @@ ${itemsList}
 💰 *Total:* Rs.${total}
 
 Please respond, thanks!`;
-    window.open(`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+    window.location.href = `https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
   if (cart.length === 0) {
