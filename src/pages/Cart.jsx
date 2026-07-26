@@ -10,22 +10,14 @@ export default function Cart({ cart, removeFromCart, updateQuantity }) {
     const itemsList = cart
       .map((item, i) => `${i + 1}. ${item.name} (Qty: ${item.quantity || 1}) - Rs.${item.price * item.quantity}`)
       .join("\n");
-    const message = `Hello Sadaat Electrical Store!
+    const message = `Hi Sadaat, I'd like to order these items. Can I get more info?
 
-I am confirming this order. Please send it to me.
-
-📦 *Order Details:*
+📦 *Order:*
 ${itemsList}
 
-💰 *Total Amount:* Rs.${total}
+💰 *Total:* Rs.${total}
 
-📍 *Delivery Location:*
-I will share my delivery location in the next message.
-
-💳 *Payment:*
-Please let me know the available payment methods and delivery charges.
-
-Looking forward to receiving my order!`;
+Please respond, thanks!`;
     window.open(`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
