@@ -40,8 +40,18 @@ export default async function handler(req, res) {
       return res.json({ products, total: products.length });
     }
 
-    // Public: GET /api/products?page=1&limit=12&category=bangles&search=gold&sort=latest
-    if (req.method === 'GET' && !req.query?.id && !req.query?.categories) {
+    // Public: GET /api/products?id=xxx or ?slug=xxx - single product
+    if (req.method === 'GET' && (req.query?.id || req.query?.slug)) {
+      const product = req.query.id
+        ? await Product.findById(req.query.id)
+        : await Product.findOne({ slug: req.query.slug });
+      if (!product) return res.status(404).json({ error: 'Not found' });
+      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
+      return res.json(product);
+    }
+
+    // Public: GET /api/products?page=1&limit=12&category=lighting&search=gold&sort=latest
+    if (req.method === 'GET' && !req.query?.categories) {
       const page = Math.max(1, parseInt(req.query.page) || 1);
       const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12));
       const skip = (page - 1) * limit;
@@ -87,16 +97,6 @@ export default async function handler(req, res) {
       const categories = await Category.find().sort({ createdAt: 1 });
       res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
       return res.json(categories);
-    }
-
-    // Public: GET /api/products?id=xxx or ?slug=xxx - single product
-    if (req.method === 'GET' && (req.query?.id || req.query?.slug)) {
-      const product = req.query.id
-        ? await Product.findById(req.query.id)
-        : await Product.findOne({ slug: req.query.slug });
-      if (!product) return res.status(404).json({ error: 'Not found' });
-      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
-      return res.json(product);
     }
 
     // Admin: POST /api/products?backfill-slugs=true - assign slugs to products missing them
