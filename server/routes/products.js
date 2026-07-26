@@ -3,6 +3,17 @@ import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import { authenticate } from '../middleware/auth.js';
 
+function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    + '-' + Date.now().toString(36);
+}
+
 const router = Router();
 
 // GET /api/products — public (supports ?id=, ?categories=true, ?page=, ?limit=, ?category=, ?search=, ?sort=)
@@ -58,6 +69,14 @@ router.get('/', async (req, res, next) => {
       Product.countDocuments(filter),
     ]);
 
+    // Backfill slugs for old products missing them
+    for (const product of products) {
+      if (!product.slug) {
+        product.slug = slugify(product.name);
+        await product.save();
+      }
+    }
+
     const totalPages = Math.ceil(total / limitNum);
 
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
@@ -111,6 +130,20 @@ router.delete('/', authenticate, async (req, res, next) => {
 
     await Product.findByIdAndDelete(id);
     res.json({ success: true });
+  } catch (err) { next(err); }
+});
+
+// POST /api/products/backfill-slugs — admin (assign slugs to all products missing them)
+router.post('/backfill-slugs', authenticate, async (req, res, next) => {
+  try {
+    const products = await Product.find({ $or: [{ slug: { $exists: false } }, { slug: null }] });
+    let count = 0;
+    for (const product of products) {
+      product.slug = slugify(product.name);
+      await product.save();
+      count++;
+    }
+    res.json({ success: true, updated: count });
   } catch (err) { next(err); }
 });
 
