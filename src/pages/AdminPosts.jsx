@@ -117,84 +117,109 @@ export default function AdminPosts() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{backgroundColor: '#f8fafc'}}>
       <AdminHeader userEmail={user.email} />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Blog Posts</h2>
-            <p className="text-sm text-gray-400 mt-1">{posts.length} total</p>
+            <h2 className="text-2xl font-bold" style={{color: '#0A0A0A'}}>Blog Posts</h2>
+            <p className="text-sm mt-1" style={{color: '#6b7280'}}>{posts.length} total posts</p>
           </div>
           <button onClick={() => { resetForm(); setShowForm(!showForm); }}
-            className={`px-5 py-2.5 text-xs font-semibold tracking-wider uppercase transition-colors ${showForm ? "bg-gray-100 text-gray-600" : "bg-brand-black text-brand-cream hover:bg-brand-gold"}`}>
-            {showForm ? "Cancel" : "New Post"}
+            className={`px-5 py-2.5 text-xs font-semibold tracking-wider uppercase rounded-lg transition-all hover:scale-[1.02] flex items-center gap-2 ${showForm ? "bg-gray-100 text-gray-600" : "text-white"}`}
+            style={!showForm ? {backgroundColor: '#0066B3'} : {}}>
+            {showForm ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancel
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Post
+              </>
+            )}
           </button>
         </div>
 
         {showForm && (
-          <div className="bg-brand-cream border border-gray-100 p-6 mb-8">
-            <h3 className="text-lg font-semibold mb-5">{editing ? "Edit Post" : "New Post"}</h3>
+          <div className="p-6 rounded-xl mb-6" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <h3 className="text-lg font-semibold mb-5" style={{color: '#0A0A0A'}}>{editing ? "Edit Post" : "New Post"}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Title</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Title</label>
                   <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value, slug: editing ? form.slug : slugify(e.target.value) })}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" required />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} required />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Slug</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Slug</label>
                   <input type="text" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" required />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} required />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Author</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Author</label>
                   <input type="text" value={form.author} onChange={e => setForm({ ...form, author: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none" />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Featured Image</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Featured Image</label>
                   <div className="flex gap-2">
                     <input type="text" value={form.featuredImage} onChange={e => setForm({ ...form, featuredImage: e.target.value })}
-                      className="flex-1 px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" placeholder="Paste URL or upload" />
-                    <label className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${uploadingFeatured ? 'bg-gray-100 text-gray-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                      className="flex-1 px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      style={{borderColor: '#e5e7eb'}} placeholder="Paste URL or upload" />
+                    <label className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider cursor-pointer rounded-lg transition-all ${uploadingFeatured ? 'bg-gray-100 text-gray-400' : 'text-white'}`}
+                      style={!uploadingFeatured ? {backgroundColor: '#0066B3'} : {}}>
                       {uploadingFeatured ? 'Uploading...' : 'Upload'}
                       <input type="file" accept="image/*" onChange={handleFeaturedUpload} className="hidden" disabled={uploadingFeatured} />
                     </label>
                   </div>
-                  {form.featuredImage && <img src={form.featuredImage} alt="" className="mt-2 w-20 h-14 object-cover" />}
+                  {form.featuredImage && <img src={form.featuredImage} alt="" className="mt-3 w-20 h-14 object-cover rounded-lg" />}
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Tags (comma separated)</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Tags (comma separated)</label>
                   <input type="text" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none" placeholder="style, trends, bangles" />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} placeholder="electrical, tips, products" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Excerpt</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Excerpt</label>
                   <textarea value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} rows="2"
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none" />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} />
                 </div>
                 <div className="md:col-span-2">
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-medium tracking-wider uppercase text-gray-400">Content</label>
-                    <label className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium tracking-wider uppercase cursor-pointer transition-colors ${uploadingImg ? 'bg-gray-100 text-gray-400' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>
+                    <label className="block text-xs font-semibold tracking-wider uppercase" style={{color: '#374151'}}>Content</label>
+                    <label className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium tracking-wider uppercase cursor-pointer rounded-lg transition-all ${uploadingImg ? 'bg-gray-100 text-gray-400' : 'hover:bg-gray-100'}`}
+                      style={!uploadingImg ? {color: '#0066B3'} : {}}>
                       {uploadingImg ? 'Uploading...' : '+ Insert Image'}
                       <input type="file" accept="image/*" onChange={insertContentImage} className="hidden" disabled={uploadingImg} />
                     </label>
                   </div>
                   <textarea ref={contentRef} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows="10"
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none font-mono" />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    style={{borderColor: '#e5e7eb'}} />
                 </div>
               </div>
               <div className="flex items-center gap-4 pt-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={form.published} onChange={e => setForm({ ...form, published: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300" />
-                  <span className="text-sm text-gray-600">Published</span>
+                    className="w-4 h-4 rounded" style={{borderColor: '#d1d5db', accentColor: '#0066B3'}} />
+                  <span className="text-sm" style={{color: '#374151'}}>Published</span>
                 </label>
                 <button type="submit" disabled={loading}
-                  className="px-6 py-2.5 bg-brand-black text-brand-cream text-xs font-semibold tracking-wider uppercase hover:bg-brand-gold transition-colors disabled:opacity-50 ml-auto">
-                  {loading ? "Saving..." : editing ? "Update" : "Create"}
+                  className="px-6 py-3 text-xs font-semibold tracking-wider uppercase rounded-lg transition-all hover:scale-[1.02] disabled:opacity-50 ml-auto text-white"
+                  style={{backgroundColor: '#0066B3'}}>
+                  {loading ? "Saving..." : editing ? "Update Post" : "Create Post"}
                 </button>
               </div>
             </form>
@@ -203,44 +228,67 @@ export default function AdminPosts() {
 
         {loading ? (
           <div className="text-center py-16">
-            <div className="w-6 h-6 border-2 border-gray-300 border-t-brand-walnut rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto" style={{borderColor: '#e5e7eb', borderTopColor: '#0066B3'}} />
+            <p className="text-sm mt-4" style={{color: '#6b7280'}}>Loading posts...</p>
           </div>
         ) : (
-          <div className="bg-brand-cream border border-gray-100 overflow-hidden">
+          <div className="rounded-xl overflow-hidden" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400">Title</th>
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400 hidden sm:table-cell">Status</th>
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400 hidden md:table-cell">Date</th>
-                    <th className="text-right p-4 text-xs font-medium tracking-wider uppercase text-gray-400">Actions</th>
+                  <tr style={{backgroundColor: '#f8fafc', borderBottom: '1px solid #e5e7eb'}}>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase" style={{color: '#6b7280'}}>Title</th>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase hidden sm:table-cell" style={{color: '#6b7280'}}>Status</th>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase hidden md:table-cell" style={{color: '#6b7280'}}>Date</th>
+                    <th className="text-right p-4 text-xs font-semibold tracking-wider uppercase" style={{color: '#6b7280'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {posts.map(post => (
-                    <tr key={post._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="p-4 font-medium truncate max-w-[200px]">{post.title}</td>
+                    <tr key={post._id} className="transition-colors hover:bg-gray-50" style={{borderBottom: '1px solid #f3f4f6'}}>
+                      <td className="p-4 font-medium truncate max-w-[200px]" style={{color: '#0A0A0A'}}>{post.title}</td>
                       <td className="p-4 hidden sm:table-cell">
-                        <span className={`text-xs font-medium ${post.published ? 'text-green-600' : 'text-gray-400'}`}>
+                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${post.published ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                           {post.published ? 'Published' : 'Draft'}
                         </span>
                       </td>
-                      <td className="p-4 text-gray-400 text-xs hidden md:table-cell">{new Date(post.createdAt).toLocaleDateString()}</td>
+                      <td className="p-4 text-xs hidden md:table-cell" style={{color: '#6b7280'}}>{new Date(post.createdAt).toLocaleDateString()}</td>
                       <td className="p-4 text-right">
-                        <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"
-                          className={`text-xs font-medium mr-3 transition-colors ${post.published ? 'text-blue-500 hover:text-blue-700' : 'text-gray-300 pointer-events-none'}`}>
-                          View
-                        </a>
-                        <button onClick={() => handleEdit(post)} className="text-xs text-gray-500 hover:text-brand-dark transition-colors mr-3 font-medium">Edit</button>
-                        <button onClick={() => handleDelete(post._id)} className="text-xs text-gray-400 hover:text-red-600 transition-colors font-medium">Delete</button>
+                        <div className="flex items-center justify-end gap-2">
+                          <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"
+                            className="p-2 rounded-lg transition-colors hover:bg-blue-50"
+                            style={post.published ? {color: '#0066B3'} : {color: '#d1d5db', pointerEvents: 'none'}}
+                            title="View">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </a>
+                          <button onClick={() => handleEdit(post)} className="p-2 rounded-lg transition-colors hover:bg-yellow-50" style={{color: '#f59e0b'}} title="Edit">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button onClick={() => handleDelete(post._id)} className="p-2 rounded-lg transition-colors hover:bg-red-50" style={{color: '#ef4444'}} title="Delete">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {posts.length === 0 && <div className="text-center py-12 text-gray-400 text-sm">No posts yet.</div>}
+            {posts.length === 0 && (
+              <div className="text-center py-16">
+                <svg className="w-12 h-12 mx-auto mb-4" style={{color: '#d1d5db'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                </svg>
+                <p className="text-sm" style={{color: '#6b7280'}}>No posts yet.</p>
+              </div>
+            )}
           </div>
         )}
       </main>

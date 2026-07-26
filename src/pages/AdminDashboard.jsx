@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "", price: "", category: "bangles", description: "", mainImage: "", thumbnails: "",
+    name: "", price: "", category: "lighting", description: "", mainImage: "", thumbnails: "",
   });
   const [mainImageFile, setMainImageFile] = useState(null);
   const [thumbnailFiles, setThumbnailFiles] = useState([]);
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
         const result = await createProduct(productData);
         if (result.error) throw new Error(result.error);
       }
-      setFormData({ name: "", price: "", category: "bangles", description: "", mainImage: "", thumbnails: [] });
+      setFormData({ name: "", price: "", category: "lighting", description: "", mainImage: "", thumbnails: [] });
       setMainImageFile(null); setThumbnailFiles([]); setShowForm(false); setEditingProduct(null);
       await loadProducts();
     } catch (err) { alert("Error: " + err.message); }
@@ -167,94 +167,175 @@ export default function AdminDashboard() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{backgroundColor: '#f8fafc'}}>
       <AdminHeader userEmail={user.email} />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="p-5 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: 'rgba(0,102,179,0.1)'}}>
+                <svg className="w-5 h-5" style={{color: '#0066B3'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{color: '#0A0A0A'}}>{products.length}</p>
+                <p className="text-xs" style={{color: '#6b7280'}}>Total Products</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-5 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: 'rgba(16,185,129,0.1)'}}>
+                <svg className="w-5 h-5" style={{color: '#10b981'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{color: '#0A0A0A'}}>{categories.length}</p>
+                <p className="text-xs" style={{color: '#6b7280'}}>Categories</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-5 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: 'rgba(245,158,11,0.1)'}}>
+                <svg className="w-5 h-5" style={{color: '#f59e0b'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{color: '#0A0A0A'}}>Rs. {filteredProducts.reduce((sum, p) => sum + p.price, 0).toLocaleString()}</p>
+                <p className="text-xs" style={{color: '#6b7280'}}>Total Value</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-5 rounded-xl" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: 'rgba(139,92,246,0.1)'}}>
+                <svg className="w-5 h-5" style={{color: '#8b5cf6'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{color: '#0A0A0A'}}>{filteredProducts.length}</p>
+                <p className="text-xs" style={{color: '#6b7280'}}>Showing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Actions bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Products</h2>
-            <p className="text-sm text-gray-400 mt-1">{products.length} total</p>
+            <h2 className="text-2xl font-bold" style={{color: '#0A0A0A'}}>Products</h2>
+            <p className="text-sm mt-1" style={{color: '#6b7280'}}>{products.length} total products</p>
           </div>
           <button onClick={() => {
             setShowForm(!showForm); setEditingProduct(null);
-            setFormData({ name: "", price: "", category: "bangles", description: "", mainImage: "", thumbnails: [] });
+            setFormData({ name: "", price: "", category: "lighting", description: "", mainImage: "", thumbnails: [] });
             setMainImageFile(null); setThumbnailFiles([]);
           }}
-            className={`px-5 py-2.5 text-xs font-semibold tracking-wider uppercase transition-colors ${showForm ? "bg-gray-100 text-gray-600" : "bg-brand-black text-brand-cream hover:bg-brand-gold"}`}>
-            {showForm ? "Cancel" : "Add Product"}
+            className={`px-5 py-2.5 text-xs font-semibold tracking-wider uppercase rounded-lg transition-all hover:scale-[1.02] flex items-center gap-2 ${showForm ? "bg-gray-100 text-gray-600" : "text-white"}`}
+            style={!showForm ? {backgroundColor: '#0066B3'} : {}}>
+            {showForm ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancel
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Product
+              </>
+            )}
           </button>
         </div>
 
         {/* Form */}
         {showForm && (
-          <div className="bg-brand-cream border border-gray-100 p-6 mb-8">
-            <h3 className="text-lg font-semibold mb-5">{editingProduct ? "Edit Product" : "New Product"}</h3>
+          <div className="p-6 rounded-xl mb-6" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
+            <h3 className="text-lg font-semibold mb-5" style={{color: '#0A0A0A'}}>{editingProduct ? "Edit Product" : "New Product"}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Name</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Product Name</label>
                   <input type="text" name="name" value={formData.name} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" required />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} required />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Price (Rs.)</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Price (Rs.)</label>
                   <input type="number" name="price" value={formData.price} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" required />
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb'}} required />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Category</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Category</label>
                   <select name="category" value={formData.category} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none bg-brand-cream">
-                    <option value="bangles">Bangles</option>
-                    <option value="nails">Nails</option>
-                    <option value="abayas">Abayas</option>
-                    <option value="necklaces">Necklaces</option>
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{borderColor: '#e5e7eb', backgroundColor: '#ffffff'}}>
+                    <option value="lighting">Lighting</option>
+                    <option value="switches">Switches & Sockets</option>
+                    <option value="wiring">Wiring</option>
+                    <option value="fans">Fans</option>
+                    <option value="appliances">Home Appliances</option>
+                    <option value="accessories">Accessories</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Main Image</label>
+                  <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Main Image</label>
                   <input type="file" accept="image/*" onChange={handleMainImageChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none" />
-                  {formData.mainImage && <img src={formData.mainImage} alt="Preview" className="mt-2 w-20 h-20 object-cover" />}
+                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    style={{borderColor: '#e5e7eb'}} />
+                  {formData.mainImage && <img src={formData.mainImage} alt="Preview" className="mt-3 w-20 h-20 object-cover rounded-lg" />}
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Additional Images (max 5)</label>
+                <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Additional Images (max 5)</label>
                 <input type="file" accept="image/*" multiple onChange={handleThumbnailChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none" />
+                  className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  style={{borderColor: '#e5e7eb'}} />
                 {Array.isArray(formData.thumbnails) && formData.thumbnails.filter(t => typeof t === 'string').length > 0 && (
-                  <div className="flex gap-2 mt-2 flex-wrap">
+                  <div className="flex gap-2 mt-3 flex-wrap">
                     {formData.thumbnails.filter(t => typeof t === 'string').map(url => (
-                      <div key={url} className="relative">
-                        <img src={url} alt="" className="w-14 h-14 object-cover" />
+                      <div key={url} className="relative group">
+                        <img src={url} alt="" className="w-16 h-16 object-cover rounded-lg" />
                         <button type="button" onClick={() => setFormData(prev => ({ ...prev, thumbnails: prev.thumbnails.filter(t => t !== url) }))}
-                          className="absolute -top-1 -right-1 bg-gray-800 text-brand-cream w-4 h-4 flex items-center justify-center text-[10px]">×</button>
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                       </div>
                     ))}
                   </div>
                 )}
                 {thumbnailFiles.length > 0 && (
-                  <div className="flex gap-2 mt-2 flex-wrap">
+                  <div className="flex gap-2 mt-3 flex-wrap">
                     {thumbnailFiles.map((thumb, idx) => (
-                      <div key={thumb.preview} className="relative">
-                        <img src={thumb.preview} alt="" className="w-14 h-14 object-cover" />
+                      <div key={thumb.preview} className="relative group">
+                        <img src={thumb.preview} alt="" className="w-16 h-16 object-cover rounded-lg" />
                         <button type="button" onClick={() => removeThumbnail(idx)}
-                          className="absolute -top-1 -right-1 bg-gray-800 text-brand-cream w-4 h-4 flex items-center justify-center text-[10px]">×</button>
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-medium tracking-wider uppercase text-gray-400 mb-2">Description</label>
+                <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Description</label>
                 <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3"
-                  className="w-full px-4 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-brand-gold" />
+                  className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{borderColor: '#e5e7eb'}} />
               </div>
               <button type="submit" disabled={loading || uploading}
-                className="px-6 py-2.5 bg-brand-black text-brand-cream text-xs font-semibold tracking-wider uppercase hover:bg-brand-gold transition-colors disabled:opacity-50">
-                {loading ? "Saving..." : uploading ? "Uploading..." : editingProduct ? "Update" : "Create"}
+                className="px-6 py-3 text-xs font-semibold tracking-wider uppercase rounded-lg transition-all hover:scale-[1.02] disabled:opacity-50 text-white"
+                style={{backgroundColor: '#0066B3'}}>
+                {loading ? "Saving..." : uploading ? "Uploading..." : editingProduct ? "Update Product" : "Create Product"}
               </button>
             </form>
           </div>
@@ -264,10 +345,15 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1 max-w-sm">
             <input type="text" placeholder="Search products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 bg-brand-cream border border-gray-200 text-sm focus:outline-none" />
+              className="w-full pl-10 pr-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{borderColor: '#e5e7eb', backgroundColor: '#ffffff'}} />
+            <svg className="absolute left-3 top-3.5 w-4 h-4" style={{color: '#9ca3af'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
           <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
-            className="px-4 py-2 bg-brand-cream border border-gray-200 text-sm focus:outline-none">
+            className="px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{borderColor: '#e5e7eb', backgroundColor: '#ffffff'}}>
             <option value="all">All Categories</option>
             {categories.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
           </select>
@@ -276,38 +362,54 @@ export default function AdminDashboard() {
         {/* Products table */}
         {loading ? (
           <div className="text-center py-16">
-            <div className="w-6 h-6 border-2 border-gray-300 border-t-brand-walnut rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto" style={{borderColor: '#e5e7eb', borderTopColor: '#0066B3'}} />
+            <p className="text-sm mt-4" style={{color: '#6b7280'}}>Loading products...</p>
           </div>
         ) : (
-          <div className="bg-brand-cream border border-gray-100 overflow-hidden">
+          <div className="rounded-xl overflow-hidden" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb'}}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400">Product</th>
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400 hidden sm:table-cell">Category</th>
-                    <th className="text-left p-4 text-xs font-medium tracking-wider uppercase text-gray-400">Price</th>
-                    <th className="text-right p-4 text-xs font-medium tracking-wider uppercase text-gray-400">Actions</th>
+                  <tr style={{backgroundColor: '#f8fafc', borderBottom: '1px solid #e5e7eb'}}>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase" style={{color: '#6b7280'}}>Product</th>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase hidden sm:table-cell" style={{color: '#6b7280'}}>Category</th>
+                    <th className="text-left p-4 text-xs font-semibold tracking-wider uppercase" style={{color: '#6b7280'}}>Price</th>
+                    <th className="text-right p-4 text-xs font-semibold tracking-wider uppercase" style={{color: '#6b7280'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <tr key={product.id} className="transition-colors hover:bg-gray-50" style={{borderBottom: '1px solid #f3f4f6'}}>
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          {product.mainImage && <img src={product.mainImage} alt="" className="w-10 h-10 object-cover" />}
-                          <span className="font-medium truncate max-w-[200px]">{product.name}</span>
+                          {product.mainImage && <img src={product.mainImage} alt="" className="w-12 h-12 object-cover rounded-lg" />}
+                          <span className="font-medium truncate max-w-[200px]" style={{color: '#0A0A0A'}}>{product.name}</span>
                         </div>
                       </td>
                       <td className="p-4 hidden sm:table-cell">
-                        <span className="text-xs text-gray-500 capitalize">{product.category}</span>
+                        <span className="px-3 py-1 text-xs font-medium rounded-full capitalize" style={{backgroundColor: 'rgba(0,102,179,0.1)', color: '#0066B3'}}>{product.category}</span>
                       </td>
-                      <td className="p-4 font-medium">Rs. {product.price.toLocaleString()}</td>
+                      <td className="p-4 font-semibold" style={{color: '#0066B3'}}>Rs. {product.price.toLocaleString()}</td>
                       <td className="p-4 text-right">
-                        <a href={`/product/${product.id}`} target="_blank" rel="noopener noreferrer"
-                          className="text-xs text-blue-500 hover:text-blue-700 transition-colors mr-3 font-medium">View</a>
-                        <button onClick={() => handleEdit(product)} className="text-xs text-gray-500 hover:text-brand-dark transition-colors mr-3 font-medium">Edit</button>
-                        <button onClick={() => handleDelete(product.id)} className="text-xs text-gray-400 hover:text-red-600 transition-colors font-medium">Delete</button>
+                        <div className="flex items-center justify-end gap-2">
+                          <a href={`/product/${product.id}`} target="_blank" rel="noopener noreferrer"
+                            className="p-2 rounded-lg transition-colors hover:bg-blue-50" style={{color: '#0066B3'}} title="View">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </a>
+                          <button onClick={() => handleEdit(product)} className="p-2 rounded-lg transition-colors hover:bg-yellow-50" style={{color: '#f59e0b'}} title="Edit">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button onClick={() => handleDelete(product.id)} className="p-2 rounded-lg transition-colors hover:bg-red-50" style={{color: '#ef4444'}} title="Delete">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -315,8 +417,13 @@ export default function AdminDashboard() {
               </table>
             </div>
             {filteredProducts.length === 0 && (
-              <div className="text-center py-12 text-gray-400 text-sm">
-                {searchQuery || categoryFilter !== "all" ? "No products match your filters." : "No products yet."}
+              <div className="text-center py-16">
+                <svg className="w-12 h-12 mx-auto mb-4" style={{color: '#d1d5db'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <p className="text-sm" style={{color: '#6b7280'}}>
+                  {searchQuery || categoryFilter !== "all" ? "No products match your filters." : "No products yet."}
+                </p>
               </div>
             )}
           </div>
