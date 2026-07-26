@@ -20,7 +20,7 @@ export default function AdminHeader({ userEmail }) {
   };
 
   return (
-    <header className="sticky top-0 z-50" style={{backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.08)'}}>
+    <header style={{backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.08)'}}>
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           {/* Mobile menu button */}
