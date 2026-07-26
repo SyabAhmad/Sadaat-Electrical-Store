@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function Home({ products, categories, handleAddToCart, productStats = {}, toggleFavorite, favorites }) {
   const navigate = useNavigate();
@@ -656,6 +656,83 @@ export default function Home({ products, categories, handleAddToCart, productSta
           </div>
         </div>
       </section>
+
+      {/* Most Sold Products */}
+      {(() => {
+        const mostSold = useMemo(() => {
+          if (!products || products.length === 0) return [];
+          if (productStats && Object.keys(productStats).length > 0) {
+            return Object.entries(productStats)
+              .map(([id, stats]) => {
+                const product = products.find(p => p.id === id);
+                return product ? { ...product, cartAdds: stats.cartAdds || 0, views: stats.views || 0 } : null;
+              })
+              .filter(Boolean)
+              .sort((a, b) => b.cartAdds - a.cartAdds)
+              .slice(0, 8);
+          }
+          const shuffled = [...products].sort(() => Math.random() - 0.5);
+          return shuffled.slice(0, 8);
+        }, [products, productStats]);
+
+        if (mostSold.length === 0) return null;
+
+        return (
+          <section className="py-12 lg:py-16" style={{backgroundColor: '#f9fafb'}}>
+            <div className="max-w-7xl mx-auto px-4 lg:px-8">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2 block" style={{color: '#0066B3'}}>Popular Items</span>
+                  <h2 className="text-2xl lg:text-3xl font-bold" style={{color: '#0A0A0A'}}>Most Sold Products</h2>
+                </div>
+                <button
+                  onClick={() => navigate('/products')}
+                  className="text-xs font-semibold tracking-wider uppercase flex items-center gap-1 hover:gap-2 transition-all min-h-[44px]"
+                  style={{color: '#0066B3'}}
+                >
+                  View All
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {mostSold.map((product) => (
+                  <div
+                    key={product.id}
+                    className="group cursor-pointer"
+                    onClick={() => { navigate(`/product/${product.id}`); window.scrollTo(0, 0); }}
+                  >
+                    <div className="relative aspect-[3/4] overflow-hidden mb-3 rounded-xl" style={{backgroundColor: '#f3f4f6'}}>
+                      <img
+                        src={product.mainImage}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      {product.cartAdds > 0 && (
+                        <span className="absolute top-3 left-3 px-3 py-1 text-[10px] font-bold tracking-wider uppercase rounded-full" style={{backgroundColor: '#0066B3', color: '#ffffff'}}>
+                          Best Seller
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(product); }}
+                        className="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+                        style={{backgroundColor: 'rgba(255,255,255,0.9)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)'}}
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill={favorites?.some(f => f.id === product.id) ? "#ef4444" : "none"} stroke={favorites?.some(f => f.id === product.id) ? "#ef4444" : "#6b7280"} strokeWidth={2}>
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <h3 className="text-sm font-medium truncate mb-1" style={{color: '#0A0A0A'}}>{product.name}</h3>
+                    <p className="text-sm font-bold" style={{color: '#0066B3'}}>Rs. {product.price}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* CTA Section */}
       <section className="py-16 lg:py-20" style={{background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 100%)'}}>
