@@ -20,6 +20,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
+import AdPopup from "./components/AdPopup";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -243,6 +244,7 @@ function App() {
 
         <Footer />
         <BackToTop />
+        <AdPopup />
       </div>
     </>
   );
