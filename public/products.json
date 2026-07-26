@@ -1,0 +1,70 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Royal Gold Bangle Set",
+      "price": 245,
+      "category": "bangles",
+      "mainImage": "https://tse2.mm.bing.net/th/id/OIP.0epZbT2RqZYDVinzPcHhqwHaHa?pid=ImgDet&w=173&h=173&c=7&dpr=1.1&o=7&rm=3",
+      "thumbnails": [
+        "https://tse2.mm.bing.net/th/id/OIP.0epZbT2RqZYDVinzPcHhqwHaHa?pid=ImgDet&w=173&h=173&c=7&dpr=1.1&o=7&rm=3"
+      ],
+      "description": "Exquisite 24k gold-plated bangles with intricate engravings."
+    },
+    {
+      "id": 2,
+      "name": "Noir Velvet Abaya",
+      "price": 350,
+      "category": "abayas",
+      "mainImage": "https://th.bing.com/th/id/OIP.8PEHKsgngFgjDpa9K2vDbgHaLH?w=195&h=358&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+      "thumbnails": [
+        "https://th.bing.com/th/id/OIP.8PEHKsgngFgjDpa9K2vDbgHaLH?w=195&h=358&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3"
+      ],
+      "description": "Handcrafted velvet abaya featuring delicate silk embroidery."
+    },
+    {
+      "id": 3,
+      "name": "Diamond Encrusted Nails",
+      "price": 85,
+      "category": "nails",
+      "mainImage": "https://tse1.explicit.bing.net/th/id/OIP.WpLgMoG9vAwtVXfrZ_5r8AHaE6?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "thumbnails": [
+        "https://tse1.explicit.bing.net/th/id/OIP.WpLgMoG9vAwtVXfrZ_5r8AHaE6?rs=1&pid=ImgDetMain&o=7&rm=3"
+      ],
+      "description": "Custom luxury press-on nails with genuine Swarovski crystals."
+    },
+    {
+      "id": 4,
+      "name": "Everesting Pearl Necklace",
+      "price": 420,
+      "category": "necklaces",
+      "mainImage": "https://a.1stdibscdn.com/2205-ct-si-clarity-hi-color-marquise-pear-diamond-necklace-18-karat-white-gold-for-sale-picture-4/j_25702/j_165959121659532017222/SEN_5322_4_master.JPG?width=768",
+      "thumbnails": [
+        "https://a.1stdibscdn.com/2205-ct-si-clarity-hi-color-marquise-pear-diamond-necklace-18-karat-white-gold-for-sale-picture-4/j_25702/j_165959121659532017222/SEN_5322_4_master.JPG?width=768"
+      ],
+      "description": "Timeless freshwater pearl necklace with white gold clasp."
+    },
+    {
+      "id": 5,
+      "name": "Rose Gold Floral Bangle",
+      "price": 180,
+      "category": "bangles",
+      "mainImage": "https://tse2.mm.bing.net/th/id/OIP.0epZbT2RqZYDVinzPcHhqwHaHa?pid=ImgDet&w=173&h=173&c=7&dpr=1.1&o=7&rm=3",
+      "thumbnails": [
+        "https://tse2.mm.bing.net/th/id/OIP.0epZbT2RqZYDVinzPcHhqwHaHa?pid=ImgDet&w=173&h=173&c=7&dpr=1.1&o=7&rm=3"
+      ],
+      "description": "Delicate rose gold bangle with hand-carved floral patterns."
+    },
+    {
+      "id": 6,
+      "name": "Midnight Silk Abaya",
+      "price": 290,
+      "category": "abayas",
+      "mainImage": "https://th.bing.com/th/id/OIP.8PEHKsgngFgjDpa9K2vDbgHaLH?w=195&h=358&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+      "thumbnails": [
+        "https://th.bing.com/th/id/OIP.8PEHKsgngFgjDpa9K2vDbgHaLH?w=195&h=358&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3"
+      ],
+      "description": "Premium silk abaya for evening elegance and comfort."
+    }
+  ]
+}

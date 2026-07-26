@@ -1,0 +1,8 @@
+{
+  "categories": [
+    { "id": "bangles", "name": "Bangles", "icon": "💍" },
+    { "id": "nails", "name": "Nails", "icon": "💅" },
+    { "id": "abayas", "name": "Abayas", "icon": "👗" },
+    { "id": "necklaces", "name": "Necklaces", "icon": "✨" }
+  ]
+}
