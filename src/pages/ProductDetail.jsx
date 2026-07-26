@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { trackProductView } from "../lib/analytics";
 
 export default function ProductDetail({ products, handleAddToCart, toggleFavorite, favorites }) {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
@@ -11,13 +11,13 @@ export default function ProductDetail({ products, handleAddToCart, toggleFavorit
   const isFav = product ? favorites.some(f => f.id === product.id) : false;
 
   useEffect(() => {
-    const foundProduct = products.find((p) => p.id === id);
+    const foundProduct = products.find((p) => p.slug === slug);
     if (foundProduct) {
       setProduct(foundProduct);
       setSelectedImage(foundProduct.mainImage || "");
       trackProductView(foundProduct.id, foundProduct.name);
     }
-  }, [id, products]);
+  }, [slug, products]);
 
   if (!product) {
     return (
@@ -206,7 +206,7 @@ Please respond, thanks!`;
                 <div
                   key={p.id}
                   className="cursor-pointer group"
-                  onClick={() => { navigate(`/product/${p.id}`); window.scrollTo(0, 0); }}
+                  onClick={() => { navigate(`/product/${p.slug}`); window.scrollTo(0, 0); }}
                 >
                   <div className="aspect-[3/4] overflow-hidden mb-3 rounded-lg" style={{backgroundColor: '#f3f4f6'}}>
                     <img src={p.mainImage} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

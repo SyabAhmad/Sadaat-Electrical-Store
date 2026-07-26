@@ -185,7 +185,7 @@ function App() {
               }
             />
             <Route
-              path="/product/:id"
+              path="/product/:slug"
               element={
                 <ProductDetail
                   products={products}

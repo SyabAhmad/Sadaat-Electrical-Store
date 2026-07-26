@@ -392,7 +392,7 @@ export default function AdminDashboard() {
                       <td className="p-4 font-semibold" style={{color: '#0066B3'}}>Rs. {product.price.toLocaleString()}</td>
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <a href={`/product/${product.id}`} target="_blank" rel="noopener noreferrer"
+                          <a href={`/product/${product.slug}`} target="_blank" rel="noopener noreferrer"
                             className="p-2 rounded-lg transition-colors hover:bg-blue-50" style={{color: '#0066B3'}} title="View">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

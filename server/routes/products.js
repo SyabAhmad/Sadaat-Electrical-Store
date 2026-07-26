@@ -8,7 +8,7 @@ const router = Router();
 // GET /api/products — public (supports ?id=, ?categories=true, ?page=, ?limit=, ?category=, ?search=, ?sort=)
 router.get('/', async (req, res, next) => {
   try {
-    const { id, categories, admin, page, limit, category, search, sort } = req.query;
+    const { id, slug, categories, admin, page, limit, category, search, sort } = req.query;
 
     // Categories
     if (categories === 'true') {
@@ -16,9 +16,11 @@ router.get('/', async (req, res, next) => {
       return res.json(cats);
     }
 
-    // Single product by id
-    if (id) {
-      const product = await Product.findById(id);
+    // Single product by id or slug
+    if (id || slug) {
+      const product = id
+        ? await Product.findById(id)
+        : await Product.findOne({ slug });
       if (!product) return res.status(404).json({ error: 'Not found' });
       return res.json(product);
     }

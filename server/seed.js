@@ -10,10 +10,12 @@ await mongoose.connect(process.env.MONGODB_URI);
 
 // Seed categories
 const categories = [
-  { slug: 'bangles', name: 'Bangles', icon: '💍' },
-  { slug: 'nails', name: 'Nails', icon: '💅' },
-  { slug: 'abayas', name: 'Abayas', icon: '👗' },
-  { slug: 'necklaces', name: 'Necklaces', icon: '✨' },
+  { slug: 'lighting', name: 'Lighting', icon: '💡' },
+  { slug: 'switches-sockets', name: 'Switches & Sockets', icon: '🔌' },
+  { slug: 'wiring', name: 'Wiring', icon: '⚡' },
+  { slug: 'fans', name: 'Fans', icon: '🌀' },
+  { slug: 'home-appliances', name: 'Home Appliances', icon: '🏠' },
+  { slug: 'accessories', name: 'Accessories', icon: '🔧' },
 ];
 
 for (const cat of categories) {

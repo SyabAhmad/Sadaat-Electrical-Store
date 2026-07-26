@@ -257,7 +257,7 @@ export default function Home({ products, categories, handleAddToCart, productSta
               {products.slice(0, 4).map((product) => (
                 <div
                   key={product.id}
-                  onClick={() => navigate(`/product/${product.id}`)}
+                  onClick={() => navigate(`/product/${product.slug}`)}
                   className="group bg-white rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1"
                   style={{boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}
                 >
@@ -701,7 +701,7 @@ export default function Home({ products, categories, handleAddToCart, productSta
                   <div
                     key={product.id}
                     className="group cursor-pointer"
-                    onClick={() => { navigate(`/product/${product.id}`); window.scrollTo(0, 0); }}
+                    onClick={() => { navigate(`/product/${product.slug}`); window.scrollTo(0, 0); }}
                   >
                     <div className="relative aspect-[3/4] overflow-hidden mb-3 rounded-xl" style={{backgroundColor: '#f3f4f6'}}>
                       <img
