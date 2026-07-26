@@ -1,19 +1,25 @@
 import { Router } from 'express';
 import multer from 'multer';
 import sharp from 'sharp';
+import { v2 as cloudinary } from 'cloudinary';
 import { authenticate } from '../middleware/auth.js';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB raw upload
+  limits: { fileSize: 15 * 1024 * 1024 },
 });
 
 router.post('/', authenticate, upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });
 
-    // Compress and resize image
     const compressed = await sharp(req.file.buffer)
       .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
       .jpeg({ quality: 75 })
@@ -22,7 +28,12 @@ router.post('/', authenticate, upload.single('file'), async (req, res, next) => 
     const b64 = compressed.toString('base64');
     const dataURI = `data:image/jpeg;base64,${b64}`;
 
-    res.json({ url: dataURI });
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'sadaat-electrical-store',
+      resource_type: 'image',
+    });
+
+    res.json({ url: result.secure_url });
   } catch (err) { next(err); }
 });
 
