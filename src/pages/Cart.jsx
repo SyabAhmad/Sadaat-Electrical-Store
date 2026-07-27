@@ -9,7 +9,10 @@ export default function Cart({ cart, removeFromCart, updateQuantity }) {
     trackCheckout(total, cart.length);
     const siteUrl = window.location.origin;
     const itemsList = cart
-      .map((item, i) => `${i + 1}. ${item.name} (Qty: ${item.quantity || 1}) - Rs.${item.price * item.quantity}\n   🔗 ${siteUrl}/product/${item.slug}`)
+      .map((item, i) => {
+        const link = item.slug ? `${siteUrl}/product/${item.slug}` : '';
+        return `${i + 1}. ${item.name} (Qty: ${item.quantity || 1}) - Rs.${item.price * item.quantity}${link ? '\n   🔗 ' + link : ''}`;
+      })
       .join("\n\n");
     const message = `Hi Sadaat, I'd like to order these items. Can I get more info?
 
