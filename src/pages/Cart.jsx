@@ -7,9 +7,10 @@ export default function Cart({ cart, removeFromCart, updateQuantity }) {
 
   const handleCheckout = () => {
     trackCheckout(total, cart.length);
+    const siteUrl = window.location.origin;
     const itemsList = cart
-      .map((item, i) => `${i + 1}. ${item.name} (Qty: ${item.quantity || 1}) - Rs.${item.price * item.quantity}`)
-      .join("\n");
+      .map((item, i) => `${i + 1}. ${item.name} (Qty: ${item.quantity || 1}) - Rs.${item.price * item.quantity}\n   🔗 ${siteUrl}/product/${item.slug}`)
+      .join("\n\n");
     const message = `Hi Sadaat, I'd like to order these items. Can I get more info?
 
 📦 *Order:*
