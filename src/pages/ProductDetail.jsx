@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { trackProductView } from "../lib/analytics";
 import { fetchProductBySlug } from "../lib/api";
+import { getOptimizedProductImage } from "../lib/images";
 
 export default function ProductDetail({ products, handleAddToCart, toggleFavorite, favorites }) {
   const { slug } = useParams();
@@ -84,7 +85,7 @@ Please respond, thanks!`;
           <div>
             <div className="aspect-square overflow-hidden mb-4 rounded-xl" style={{backgroundColor: '#f3f4f6'}}>
               <img
-                src={selectedImage}
+                src={getOptimizedProductImage(selectedImage, 800)}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -99,7 +100,7 @@ Please respond, thanks!`;
                       selectedImage === img ? "border-blue-500" : "border-transparent opacity-60 hover:opacity-100"
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={getOptimizedProductImage(img, 120)} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -218,7 +219,7 @@ Please respond, thanks!`;
                   onClick={() => { navigate(`/product/${p.slug}`); window.scrollTo(0, 0); }}
                 >
                   <div className="aspect-[3/4] overflow-hidden mb-3 rounded-lg" style={{backgroundColor: '#f3f4f6'}}>
-                    <img src={p.mainImage} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={getOptimizedProductImage(p.mainImage, 300)} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <h3 className="text-sm font-medium truncate" style={{color: '#0A0A0A'}}>{p.name}</h3>
                   <p className="text-sm font-semibold" style={{color: '#0066B3'}}>Rs. {p.price}</p>

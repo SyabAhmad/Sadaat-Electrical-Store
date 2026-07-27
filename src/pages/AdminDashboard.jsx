@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, fetchProducts, createProduct, updateProduct, deleteProduct, uploadImage } from "../lib/api";
+import { getCurrentUser, fetchProducts, fetchCategories, createProduct, updateProduct, deleteProduct, uploadImage } from "../lib/api";
 import AdminHeader from "../components/AdminHeader";
 
 export default function AdminDashboard() {
@@ -12,6 +12,8 @@ export default function AdminDashboard() {
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [apiCategories, setApiCategories] = useState([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -28,6 +30,7 @@ export default function AdminDashboard() {
       if (userData.error || !userData._id) { navigate("/admin/login"); return; }
       setUser(userData);
       await loadProducts();
+      await loadCategories();
     } catch { navigate("/admin/login"); }
   };
 
@@ -120,8 +123,8 @@ export default function AdminDashboard() {
         const result = await createProduct(productData);
         if (result.error) throw new Error(result.error);
       }
-      setFormData({ name: "", price: "", category: "lighting", description: "", mainImage: "", thumbnails: [] });
-      setMainImageFile(null); setThumbnailFiles([]); setShowForm(false); setEditingProduct(null);
+      setFormData({ name: "", price: "", category: apiCategories[0]?.slug || "lighting", description: "", mainImage: "", thumbnails: [] });
+      setMainImageFile(null); setThumbnailFiles([]); setShowForm(false); setEditingProduct(null); setShowNewCategory(false);
       await loadProducts();
     } catch (err) { alert("Error: " + err.message); }
     finally { setLoading(false); }
@@ -137,6 +140,13 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
+  const loadCategories = async () => {
+    try {
+      const data = await fetchCategories();
+      if (Array.isArray(data)) setApiCategories(data);
+    } catch {}
+  };
+
   const handleEdit = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -144,7 +154,7 @@ export default function AdminDashboard() {
       description: product.description || "", mainImage: product.mainImage || "",
       thumbnails: Array.isArray(product.thumbnails) ? product.thumbnails : [],
     });
-    setMainImageFile(null); setThumbnailFiles([]); setShowForm(true);
+    setMainImageFile(null); setThumbnailFiles([]); setShowForm(true); setShowNewCategory(false);
   };
 
   const handleDelete = async (id) => {
@@ -237,7 +247,7 @@ export default function AdminDashboard() {
           <button onClick={() => {
             setShowForm(!showForm); setEditingProduct(null);
             setFormData({ name: "", price: "", category: "lighting", description: "", mainImage: "", thumbnails: [] });
-            setMainImageFile(null); setThumbnailFiles([]);
+            setMainImageFile(null); setThumbnailFiles([]); setShowNewCategory(false);
           }}
             className={`px-5 py-2.5 text-xs font-semibold tracking-wider uppercase rounded-lg transition-all hover:scale-[1.02] flex items-center gap-2 ${showForm ? "bg-gray-100 text-gray-600" : "text-white"}`}
             style={!showForm ? {backgroundColor: '#0066B3'} : {}}>
@@ -279,16 +289,36 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Category</label>
-                  <select name="category" value={formData.category} onChange={handleInputChange}
-                    className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    style={{borderColor: '#e5e7eb', backgroundColor: '#ffffff'}}>
-                    <option value="lighting">Lighting</option>
-                    <option value="switches">Switches & Sockets</option>
-                    <option value="wiring">Wiring</option>
-                    <option value="fans">Fans</option>
-                    <option value="appliances">Home Appliances</option>
-                    <option value="accessories">Accessories</option>
-                  </select>
+                  {!showNewCategory ? (
+                    <div className="flex gap-2">
+                      <select name="category" value={formData.category} onChange={handleInputChange}
+                        className="flex-1 px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        style={{borderColor: '#e5e7eb', backgroundColor: '#ffffff'}}>
+                        {apiCategories.map(c => (
+                          <option key={c.slug || c.name} value={c.slug || c.name}>
+                            {c.name.charAt(0).toUpperCase() + c.name.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                      <button type="button" onClick={() => { setShowNewCategory(true); setFormData({ ...formData, category: '' }); }}
+                        className="px-3 py-3 text-xs font-semibold rounded-lg border transition-colors hover:bg-gray-50 whitespace-nowrap"
+                        style={{borderColor: '#e5e7eb', color: '#0066B3'}}>
+                        + New
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input type="text" name="category" value={formData.category} onChange={handleInputChange}
+                        placeholder="Enter new category name"
+                        className="flex-1 px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        style={{borderColor: '#e5e7eb'}} required />
+                      <button type="button" onClick={() => { setShowNewCategory(false); setFormData({ ...formData, category: apiCategories[0]?.slug || 'lighting' }); }}
+                        className="px-3 py-3 text-xs font-semibold rounded-lg border transition-colors hover:bg-gray-50 whitespace-nowrap"
+                        style={{borderColor: '#e5e7eb', color: '#6b7280'}}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold tracking-wider uppercase mb-2" style={{color: '#374151'}}>Main Image</label>

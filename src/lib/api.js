@@ -14,7 +14,7 @@ const request = async (path, options = {}, retries = 1) => {
 
   let res;
   for (let attempt = 0; attempt <= retries; attempt++) {
-    res = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: 'include' });
+    res = await fetch(`${API_URL}${path}`, { ...options, headers });
     if (res.ok || res.status === 401 || res.status === 404) break;
     if (res.status >= 500 && attempt < retries) await sleep(1000 * (attempt + 1));
   }
@@ -23,7 +23,7 @@ const request = async (path, options = {}, retries = 1) => {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       headers['Authorization'] = `Bearer ${accessToken}`;
-      res = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: 'include' });
+      res = await fetch(`${API_URL}${path}`, { ...options, headers });
     }
   }
 
@@ -39,7 +39,6 @@ const refreshAccessToken = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
-      credentials: 'include',
     });
     if (!res.ok) {
       localStorage.removeItem('accessToken');

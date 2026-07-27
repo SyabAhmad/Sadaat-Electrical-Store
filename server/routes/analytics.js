@@ -1,18 +1,47 @@
 import { Router } from 'express';
 import Analytics from '../models/Analytics.js';
 import { authenticate } from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
+import { trackEventSchema } from '../validators/analytics.js';
 
 const router = Router();
 
-// POST /api/analytics — public (fire-and-forget)
-router.post('/', async (req, res, next) => {
+// Batch analytics buffer
+let analyticsBuffer = [];
+let bufferTimer = null;
+
+const flushAnalytics = async () => {
+  const batch = analyticsBuffer.splice(0);
+  if (batch.length === 0) return;
   try {
-    await Analytics.create(req.body);
+    await Analytics.insertMany(batch);
+  } catch (err) {
+    console.error('Analytics batch insert error:', err.message);
+  }
+};
+
+const scheduleFlush = () => {
+  if (bufferTimer) return;
+  bufferTimer = setTimeout(() => {
+    bufferTimer = null;
+    flushAnalytics();
+  }, 5000);
+};
+
+// POST /api/analytics — public (fire-and-forget, batched)
+router.post('/', validate(trackEventSchema), async (req, res, next) => {
+  try {
+    analyticsBuffer.push(req.body);
+    if (analyticsBuffer.length >= 50) {
+      flushAnalytics();
+    } else {
+      scheduleFlush();
+    }
     res.json({ ok: true });
   } catch (err) { next(err); }
 });
 
-// GET /api/analytics — public stats, admin events, or recent events
+// GET /api/analytics — public stats or admin events
 router.get('/', async (req, res, next) => {
   try {
     const { days, admin } = req.query;
@@ -26,38 +55,79 @@ router.get('/', async (req, res, next) => {
 
     // Admin: /api/analytics?admin=true - returns raw events
     if (admin === 'true') {
-      const user = authenticate(req, res);
-      if (!user) return res.status(401).json({ error: 'Unauthorized' });
-      const events = await Analytics.find(dateFilter).sort({ createdAt: -1 }).limit(500);
+      const authed = authenticate(req, res);
+      if (!authed) return;
+      const events = await Analytics.find(dateFilter).sort({ createdAt: -1 }).limit(500).lean();
       return res.json(events);
     }
 
-    // Stats: /api/analytics?days=N - aggregated data
-    const events = await Analytics.find({
-      eventType: { $in: ['product_view', 'add_to_cart', 'page_view', 'checkout'] },
-      ...dateFilter,
-    }).sort({ createdAt: 1 });
+    // Stats: /api/analytics?days=N — aggregated via MongoDB pipeline
+    const matchStage = {
+      $match: {
+        eventType: { $in: ['product_view', 'add_to_cart', 'page_view', 'checkout'] },
+        ...dateFilter,
+      },
+    };
 
-    const productStats = {};
-    const dailyMap = {};
+    // Daily aggregation
+    const dailyPipeline = [
+      matchStage,
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          pageViews: { $sum: { $cond: [{ $eq: ['$eventType', 'page_view'] }, 1, 0] } },
+          productViews: { $sum: { $cond: [{ $eq: ['$eventType', 'product_view'] }, 1, 0] } },
+          addToCart: { $sum: { $cond: [{ $eq: ['$eventType', 'add_to_cart'] }, 1, 0] } },
+          checkouts: { $sum: { $cond: [{ $eq: ['$eventType', 'checkout'] }, 1, 0] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ];
 
-    events.forEach(e => {
-      const pid = e.eventData?.productId;
-      const day = new Date(e.createdAt).toISOString().split('T')[0];
+    // Product stats aggregation
+    const productStatsPipeline = [
+      {
+        $match: {
+          eventType: { $in: ['product_view', 'add_to_cart'] },
+          'eventData.productId': { $exists: true },
+          ...dateFilter,
+        },
+      },
+      {
+        $group: {
+          _id: '$eventData.productId',
+          productName: { $first: '$eventData.productName' },
+          views: { $sum: { $cond: [{ $eq: ['$eventType', 'product_view'] }, 1, 0] } },
+          cartAdds: { $sum: { $cond: [{ $eq: ['$eventType', 'add_to_cart'] }, 1, 0] } },
+        },
+      },
+    ];
 
-      if (!dailyMap[day]) dailyMap[day] = { pageViews: 0, productViews: 0, addToCart: 0, checkouts: 0 };
-      if (e.eventType === 'page_view') dailyMap[day].pageViews++;
-      else if (e.eventType === 'product_view') dailyMap[day].productViews++;
-      else if (e.eventType === 'add_to_cart') dailyMap[day].addToCart++;
-      else if (e.eventType === 'checkout') dailyMap[day].checkouts++;
+    const [dailyResult, productStatsResult] = await Promise.all([
+      Analytics.aggregate(dailyPipeline),
+      Analytics.aggregate(productStatsPipeline),
+    ]);
 
-      if (!pid) return;
-      if (!productStats[pid]) productStats[pid] = { views: 0, cartAdds: 0, productName: e.eventData?.productName || '' };
-      if (e.eventType === 'product_view') productStats[pid].views += 1;
-      if (e.eventType === 'add_to_cart') productStats[pid].cartAdds += 1;
+    const daily = {};
+    dailyResult.forEach(d => {
+      daily[d._id] = {
+        pageViews: d.pageViews,
+        productViews: d.productViews,
+        addToCart: d.addToCart,
+        checkouts: d.checkouts,
+      };
     });
 
-    res.json({ productStats, daily: dailyMap });
+    const productStats = {};
+    productStatsResult.forEach(p => {
+      productStats[p._id] = {
+        views: p.views,
+        cartAdds: p.cartAdds,
+        productName: p.productName || '',
+      };
+    });
+
+    res.json({ productStats, daily });
   } catch (err) { next(err); }
 });
 

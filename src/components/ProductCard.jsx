@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { getOptimizedProductImage } from "../lib/images";
 
 const tagColors = {
   sale: { bg: "#7f1d1d", text: "#ffffff" },
@@ -25,8 +26,9 @@ export default function ProductCard({ product, onAddToCart, isFavorite, onToggle
       {/* Image */}
       <Link to={`/product/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden mb-3 bg-gray-100">
         <img
-          src={selectedImage}
+          src={getOptimizedProductImage(selectedImage, 400)}
           alt={product.name}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         {/* Tag Badge */}
@@ -67,7 +69,7 @@ export default function ProductCard({ product, onAddToCart, isFavorite, onToggle
                     : "border-gray-200 hover:border-gray-400"
                 }`}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={getOptimizedProductImage(img, 80)} alt="" loading="lazy" className="w-full h-full object-cover" />
               </button>
             ))}
         </div>

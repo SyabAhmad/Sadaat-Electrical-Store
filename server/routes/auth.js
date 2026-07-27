@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { authenticate } from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
+import { loginSchema, refreshSchema } from '../validators/auth.js';
 
 const router = Router();
 
@@ -23,21 +25,41 @@ const generateTokens = (user) => {
 // POST /api/auth - handles login, refresh, logout
 router.post('/', async (req, res, next) => {
   try {
-    const { email, password, refreshToken, logout } = req.body;
+    const { logout } = req.body;
+
+    // Logout
+    if (logout) {
+      return res.json({ ok: true });
+    }
 
     // Login
-    if (email && password) {
+    if (req.body.email && req.body.password) {
+      validate(loginSchema)(req, res, () => {});
+      if (res.headersSent) return;
+      const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user || !(await bcrypt.compare(password, user.password))) {
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      if (user.isLocked()) {
+        const minutes = Math.ceil((user.lockUntil - Date.now()) / 60000);
+        return res.status(429).json({ error: `Account locked. Try again in ${minutes} minute(s).` });
+      }
+      if (!(await bcrypt.compare(password, user.password))) {
+        await user.incrementLoginAttempts();
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
+      await user.resetLoginAttempts();
       const tokens = generateTokens(user);
       return res.json({ ...tokens, user: { id: user._id, email: user.email, role: user.role } });
     }
 
     // Refresh
-    if (refreshToken) {
+    if (req.body.refreshToken) {
+      validate(refreshSchema)(req, res, () => {});
+      if (res.headersSent) return;
+      const { refreshToken } = req.body;
       try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const user = await User.findById(decoded.userId);
@@ -48,11 +70,6 @@ router.post('/', async (req, res, next) => {
       } catch {
         return res.status(401).json({ error: 'Invalid refresh token' });
       }
-    }
-
-    // Logout
-    if (logout) {
-      return res.json({ ok: true });
     }
 
     return res.status(400).json({ error: 'Invalid auth request' });
@@ -69,22 +86,30 @@ router.get('/', authenticate, async (req, res, next) => {
 });
 
 // Keep backward-compatible routes
-router.post('/login', async (req, res, next) => {
+router.post('/login', validate(loginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    if (user.isLocked()) {
+      const minutes = Math.ceil((user.lockUntil - Date.now()) / 60000);
+      return res.status(429).json({ error: `Account locked. Try again in ${minutes} minute(s).` });
+    }
+    if (!(await bcrypt.compare(password, user.password))) {
+      await user.incrementLoginAttempts();
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    await user.resetLoginAttempts();
     const tokens = generateTokens(user);
     res.json({ ...tokens, user: { id: user._id, email: user.email, role: user.role } });
   } catch (err) { next(err); }
 });
 
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh', validate(refreshSchema), async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
-    if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await User.findById(decoded.userId);
     if (!user) return res.status(401).json({ error: 'User not found' });

@@ -13,7 +13,7 @@ function slugify(text) {
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  slug: { type: String, unique: true },
+  slug: { type: String, required: true, unique: true },
   price: { type: Number, required: true },
   category: { type: String, required: true },
   mainImage: String,
@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
   description: String,
 }, { timestamps: true });
 
-productSchema.pre('save', function (next) {
+productSchema.pre('validate', function (next) {
   if (!this.slug) this.slug = slugify(this.name);
   next();
 });
@@ -34,7 +34,9 @@ productSchema.pre('findOneAndUpdate', function (next) {
   next();
 });
 
-productSchema.index({ category: 1 });
-productSchema.index({ createdAt: -1 });
+productSchema.index({ name: 'text', description: 'text' });
+productSchema.index({ category: 1, createdAt: -1 });
+productSchema.index({ category: 1, price: 1 });
+productSchema.index({ price: 1 });
 
 export default mongoose.model('Product', productSchema);

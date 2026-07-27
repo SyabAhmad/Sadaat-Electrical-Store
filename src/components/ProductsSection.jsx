@@ -8,17 +8,16 @@ export default function ProductsSection({ onAddToCart, favorites = [], onToggleF
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
-    fetchProducts({ page: 1, limit: 8, sort: "latest" })
+    setLoading(true);
+    const params = { page: 1, limit: 8, sort: "latest" };
+    if (selectedCategory !== "all") params.category = selectedCategory;
+    fetchProducts(params)
       .then((data) => {
         setProducts((data?.products || []).map(p => ({ ...p, id: p._id })));
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
-
-  const filteredProducts = (products || []).filter(
-    (p) => selectedCategory === "all" || p.category === selectedCategory
-  );
+  }, [selectedCategory]);
 
   return (
     <section className="py-20 px-6 lg:px-8 max-w-7xl mx-auto">
@@ -60,9 +59,9 @@ export default function ProductsSection({ onAddToCart, favorites = [], onToggleF
         <div className="text-center py-20">
           <div className="w-6 h-6 border-2 border-gray-300 border-t-brand-dark rounded-full animate-spin mx-auto" />
         </div>
-      ) : filteredProducts.length > 0 ? (
+      ) : products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -80,7 +79,7 @@ export default function ProductsSection({ onAddToCart, favorites = [], onToggleF
         </div>
       )}
 
-      {filteredProducts.length > 0 && (
+      {products.length > 0 && (
         <div className="text-center mt-12">
           <a
             href="/products"

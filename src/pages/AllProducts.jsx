@@ -1,31 +1,50 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { fetchProducts } from "../lib/api";
+import { fetchProducts, fetchCategories } from "../lib/api";
 import ProductCard from "../components/ProductCard";
 
 const ITEMS_PER_PAGE = 12;
+const SEARCH_DEBOUNCE_MS = 300;
 
-const categories = [
+const fallbackCategories = [
   { name: "All Products", slug: "all", image: "/images/split_screen_hero.webp" },
-  { name: "Lighting", slug: "lighting", image: "/images/led_split_screen_poster.webp" },
-  { name: "Switches", slug: "switches", image: "/images/switches_bedroom_split_screen.webp" },
-  { name: "Wiring", slug: "wiring", image: "/images/copper_wire_split_screen.webp" },
-  { name: "Fans", slug: "fans", image: "/images/split_screen_fan_poster.webp" },
-  { name: "Appliances", slug: "appliances", image: "/images/split_screen_heating_appliances_bathroom.webp" },
-  { name: "Accessories", slug: "accessories", image: "/images/pvc_conduit_split_screen.webp" },
 ];
 
 export default function AllProducts({ handleAddToCart, toggleFavorite, favorites }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const debounceRef = useRef(null);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(fallbackCategories);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
+
+  useEffect(() => {
+    fetchCategories()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setCategories([...fallbackCategories, ...data]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchTerm(searchInput);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchInput]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -33,7 +52,7 @@ export default function AllProducts({ handleAddToCart, toggleFavorite, favorites
     const search = params.get("search");
     const p = params.get("page");
     if (cat) setSelectedCategory(cat);
-    if (search) setSearchTerm(search);
+    if (search) { setSearchInput(search); setSearchTerm(search); }
     if (p) setPage(parseInt(p) || 1);
   }, [location]);
 
@@ -81,7 +100,7 @@ export default function AllProducts({ handleAddToCart, toggleFavorite, favorites
       {/* Hero Header */}
       <section className="relative py-16 lg:py-24 overflow-hidden" style={{background: 'linear-gradient(135deg, #0A0A0A 0%, #111827 100%)'}}>
         <div className="absolute inset-0 opacity-30">
-          <img src={currentCategory.image} alt="" className="w-full h-full object-cover" />
+          <img src={currentCategory.image} alt="" loading="lazy" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40" />
         <div className="relative max-w-7xl mx-auto px-4 lg:px-8">
@@ -106,8 +125,8 @@ export default function AllProducts({ handleAddToCart, toggleFavorite, favorites
               <input
                 type="text"
                 placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => handleFilterChange({ search: e.target.value })}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full px-5 py-3 pr-12 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{borderColor: '#e5e7eb'}}
               />

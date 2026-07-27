@@ -1,26 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { fetchProducts, fetchCategories, fetchProductStats } from "./lib/api";
 import { trackPageView, trackAddToCart, trackRemoveFromCart } from "./lib/analytics";
-import AnalyticsDashboard from "./pages/AnalyticsDashboard";
-import Reports from "./pages/Reports";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import AdminPosts from "./pages/AdminPosts";
-import Home from "./pages/Home";
-import AllProducts from "./pages/AllProducts";
-import ProductDetail from "./pages/ProductDetail";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Favorites from "./pages/Favorites";
-import Cart from "./pages/Cart";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import BackToTop from "./components/BackToTop";
 import AdPopup from "./components/AdPopup";
+
+const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const AdminPosts = lazy(() => import("./pages/AdminPosts"));
+const Home = lazy(() => import("./pages/Home"));
+const AllProducts = lazy(() => import("./pages/AllProducts"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Cart = lazy(() => import("./pages/Cart"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -170,6 +171,7 @@ function App() {
         />
 
         <main>
+          <Suspense fallback={<div className="flex justify-center items-center min-h-[60vh]"><div className="w-8 h-8 border-3 rounded-full animate-spin" style={{borderColor: '#e5e7eb', borderTopColor: '#0066B3'}} /></div>}>
           <Routes>
             <Route
               path="/"
@@ -240,6 +242,7 @@ function App() {
             <Route path="/admin/reports" element={<Reports />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
           </Routes>
+          </Suspense>
         </main>
 
         <Footer />

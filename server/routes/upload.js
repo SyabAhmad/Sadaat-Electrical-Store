@@ -10,10 +10,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, WebP, and AVIF are allowed.'));
+    }
+  },
 });
 
 router.post('/', authenticate, upload.single('file'), async (req, res, next) => {
